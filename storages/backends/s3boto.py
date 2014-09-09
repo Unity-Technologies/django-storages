@@ -13,6 +13,13 @@ except ImportError:
 from django.core.files.base import File
 from django.core.files.storage import Storage
 from django.core.exceptions import ImproperlyConfigured, SuspiciousOperation
+
+try:
+    from django.utils.deconstruct import deconstructible
+except ImportError:
+    def deconstructible(func):
+        return func
+
 from django.utils.encoding import force_unicode, smart_str, filepath_to_uri
 
 try:
@@ -198,6 +205,7 @@ class S3BotoStorageFile(File):
         self.key.close()
 
 
+@deconstructible
 class S3BotoStorage(Storage):
     """
     Amazon Simple Storage Service using Boto
