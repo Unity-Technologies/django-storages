@@ -2,6 +2,11 @@ import os
 import sys
 import django
 
+try:
+    from django.apps import apps
+except ImportError:
+    apps = None
+
 BASE_PATH = os.path.dirname(__file__)
 
 def main():
@@ -10,7 +15,6 @@ def main():
     You can play with a django model without a complete django app installation.
     http://www.djangosnippets.org/snippets/1044/
     """
-    sys.exc_clear()
 
     os.environ["DJANGO_SETTINGS_MODULE"] = "django.conf.global_settings"
     from django.conf import global_settings
@@ -48,6 +52,10 @@ def main():
     global_settings.DEFAULT_FILE_STORAGE = 'backends.s3boto.S3BotoStorage'
     global_settings.AWS_IS_GZIPPED = True
     global_settings.SECRET_KEY = "tralala"
+
+    if django.VERSION >= (1,7):
+        django.setup()
+        apps.set_installed_apps(global_settings.INSTALLED_APPS)
 
     from django.test.utils import get_runner
     test_runner = get_runner(global_settings)
